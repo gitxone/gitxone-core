@@ -10,7 +10,7 @@ import (
 
 	"golang.org/x/net/websocket"
 
-	"gitlab.com/righ/gitxone-core/parsers"
+	"github.com/gitxone/gitxone-core/parsers"
 )
 
 const defaultHost = ""
