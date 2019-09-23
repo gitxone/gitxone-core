@@ -1,0 +1,39 @@
+{
+  "name": "gitxone-core",
+  "version": "1.0.0",
+  "description": "My funkadelic Nuxt.js project",
+  "author": "righ",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt",
+    "build": "nuxt build",
+    "start": "nuxt start",
+    "generate": "nuxt generate",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@types/uuid": "^3.4.5",
+    "moment": "^2.24.0",
+    "nuxt": "^2.9.2",
+    "uuid": "^3.3.3",
+    "vue-draggable-resizable": "^2.0.1",
+    "vue-sidebar-menu": "^4.2.1"
+  },
+  "devDependencies": {
+    "@fortawesome/fontawesome-free": "^5.11.1",
+    "@nuxt/typescript": "^2.8.1",
+    "@vue/test-utils": "^1.0.0-beta.27",
+    "babel-core": "7.0.0-bridge.0",
+    "babel-jest": "^24.1.0",
+    "css-loader": "^3.2.0",
+    "jest": "^24.1.0",
+    "nodemon": "^1.18.9",
+    "postcss-loader": "^3.0.0",
+    "style-loader": "^1.0.0",
+    "stylus": "^0.54.7",
+    "stylus-loader": "^3.0.2",
+    "ts-loader": "^6.1.0",
+    "typescript": "^3.6.3",
+    "vue-jest": "^3.0.3"
+  }
+}

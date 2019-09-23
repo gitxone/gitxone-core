@@ -1,0 +1,10 @@
+{
+  "topZ": 0,
+  "panes": {
+    "default1": {"command": "log --graph --pretty=format:'%h %ad %s %d' --all --date=format:'%y%m%d %H:%M'", "x": 100, "y": 0, "width": 500, "height": 200},
+    "default2": {"command": "status --short", "x": 0, "y": 200, "width": 200, "height": 100},
+    "default3": {"command": "branch", "x": 0, "y": 400, "width": 200, "height": 100},
+    "default4": {"command": "tag", "x": 0, "y": 500, "width": 200, "height": 100},
+    "default5": {"command": "remote", "x": 0, "y": 600, "width": 200, "height": 100}
+  }
+}
