@@ -1,0 +1,29 @@
+version: '3'
+services:
+  go:
+    build: .
+    volumes:
+      - ./:/home/gitxone/gitxone-core/
+      - ./:/home/gitxone/go/src/github.com/gitxone/gitxone-core/
+    working_dir: /home/gitxone/
+    ports:
+      - "10098:10098"
+    tty: true
+    networks:
+      - gitxone-network
+
+  node:
+    image: node:latest
+    volumes:
+      - ./:/root/
+    working_dir: /root/src/
+    command: >
+      bash -c "npm install && npm run dev"
+    ports:
+      - "3000:3000"
+    networks:
+      - gitxone-network
+
+networks:
+  gitxone-network:
+
