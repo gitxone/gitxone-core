@@ -3,9 +3,8 @@ services:
   go:
     build: .
     volumes:
-      - ./:/home/gitxone/gitxone-core/
-      - ./:/home/gitxone/go/src/github.com/gitxone/gitxone-core/
-    working_dir: /home/gitxone/
+      - ./:/go/src/github.com/gitxone/gitxone-core/
+      # - ./:/home/gitxone/go/src/github.com/gitxone/gitxone-core/
     ports:
       - "10098:10098"
     tty: true
@@ -15,8 +14,8 @@ services:
   node:
     image: node:latest
     volumes:
-      - ./:/root/
-    working_dir: /root/src/
+      - ./:/home/gitxone/gitxone-core/
+    working_dir: /home/gitxone/gitxone-core/
     command: >
       bash -c "npm install && npm run dev"
     ports:
