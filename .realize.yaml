@@ -1,0 +1,23 @@
+settings:
+  legacy:
+    force: false
+    interval: 0s
+schema:
+- name: realize
+  path: .
+  commands: 
+    run:
+      status: true
+  watcher:
+    extensions:
+    - go
+    paths:
+    - / 
+    ignored_paths:
+    - .git
+    - .config
+    - .npm
+    - .nuxt
+    - .realize
+    - node_modules
+    - vendor

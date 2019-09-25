@@ -1,9 +1,8 @@
 FROM golang:latest
 
-RUN useradd gitxone --create-home --shell /bin/bash && \
-    go get golang.org/x/net/websocket
+RUN go get golang.org/x/net/websocket && \
+    go get github.com/oxequa/realize
 
 WORKDIR /go/
 
-USER gitxone
 

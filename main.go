@@ -53,7 +53,6 @@ func gitHandlerFactory(path string) func(ws *websocket.Conn) {
 				res.Err = err.Error()
 			}
 			data, _ := json.Marshal(res)
-			println(string(data))
 			ws.Write(data)
 		}
 	}
