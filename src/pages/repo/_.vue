@@ -44,6 +44,14 @@ import defaultState from '@/defaultState.json'
 
 import Pane from '@/components/Pane.vue'
 
+function makeSocket() {
+  this.socket = new WebSocket(`ws://${location.hostname}:10098/git?path=${this.path}`)
+  this.socket.addEventListener('close', (event) => {
+    makeSocket.call(this)
+  })
+}
+
+
 export default Vue.extend({
   components: {
     'vue-draggable-resizable': VueDraggableResizable,
@@ -52,6 +60,7 @@ export default Vue.extend({
   },
   data: function () {
     return {
+      socket: null,
       menu: [
         {
           header: true,
@@ -123,10 +132,6 @@ export default Vue.extend({
     paneItems () {
       return Object.entries(this.panes)
     },
-    socket () {
-      const socket = new WebSocket(`ws://${location.hostname}:10098/git?path=${this.path}`)
-      return socket
-    }
   },
   methods: {
     handleMenuClick: function (event, item) {
@@ -147,6 +152,9 @@ export default Vue.extend({
         this.socket.send(params)
       }
     }
+  },
+  created () {
+    makeSocket.call(this)
   },
   mounted () {
     setTimeout(this.loadAll, 500)

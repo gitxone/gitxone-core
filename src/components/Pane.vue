@@ -100,6 +100,32 @@ import {
   SAVE_REPOS,
 } from '@/store/mutationTypes.ts'
 
+function handleSocketCreated () {
+    this.socket.addEventListener('message', (event) => {
+      const data = JSON.parse(event.data)
+      if (this.id !== data.id) {
+        return
+      }
+      this.result = data.content || ''
+      this.error =  data.error || ''
+      switch (this.post) {
+        case 'exit':
+          this.$store.commit(DEL_PANE, {path: this.path, id: this.id})
+          this.loadAll()
+          break
+        case 'clear':
+          this.command = ''
+          this.$store.commit(SET_PANE, {path: this.path, id: this.id, command: ''})
+          this.loadAll()
+          break
+      }
+      this.$store.commit(SAVE_REPOS)
+      this.processing = false
+      this.$forceUpdate()
+    }, false)
+
+}
+
 export default Vue.extend({
   components: {
     'vue-draggable-resizable': VueDraggableResizable,
@@ -149,28 +175,10 @@ export default Vue.extend({
     },
   },
   mounted: function () {
-    this.socket.addEventListener('message', (event) => {
-      const data = JSON.parse(event.data)
-      if (this.id !== data.id) {
-        return
-      }
-      this.result = data.content || ''
-      this.error =  data.error || ''
-      switch (this.post) {
-        case 'exit':
-          this.$store.commit(DEL_PANE, {path: this.path, id: this.id})
-          this.loadAll()
-          break
-        case 'clear':
-          this.command = ''
-          this.$store.commit(SET_PANE, {path: this.path, id: this.id, command: ''})
-          this.loadAll()
-          break
-      }
-      this.$store.commit(SAVE_REPOS)
-      this.processing = false
-      this.$forceUpdate()
-    }, false)
+    handleSocketCreated.call(this)
+  },
+  updated: function () {
+    handleSocketCreated.call(this)
   },
 
 })
