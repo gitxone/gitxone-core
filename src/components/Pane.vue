@@ -25,7 +25,7 @@
       &amp;&amp; {{ post }}
     </div>
   </div>
-  <pre :class="`pane-body`">{{ error || result }}</pre>
+  <pre :class="`pane-body`" :title="error">{{ result }}</pre>
 </div>
 </vue-draggable-resizable>
 </template>

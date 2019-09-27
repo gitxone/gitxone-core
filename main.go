@@ -43,11 +43,11 @@ func gitHandlerFactory(path string) func(ws *websocket.Conn) {
 			tokens := parsers.ParseCommand(req.Command)
 			tokens = append([]string{"-C", path}, tokens...)
 
-			command := exec.Command("git", tokens...)
-			command.Env = []string{
+			cmd := exec.Command("git", tokens...)
+			cmd.Env = []string{
 				"PAGER=cat",
 			}
-			out, err := command.Output()
+			out, err := cmd.CombinedOutput()
 			res := Response{Id: req.Id, Content: string(out)}
 			if err != nil {
 				res.Err = err.Error()
