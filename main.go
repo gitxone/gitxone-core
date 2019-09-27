@@ -28,7 +28,29 @@ type Response struct {
 	Err     string `json:"error"`
 }
 
-func gitHandlerFactory(path string) func(ws *websocket.Conn) {
+func gitHandler(w http.ResponseWriter, req *http.Request) {
+	params := req.URL.Query()
+	paths, ok := params["path"]
+	if !ok || len(paths) != 1 {
+		http.NotFound(w, req)
+		return
+	}
+	path := paths[0]
+	if path[0] == '~' {
+		path = fmt.Sprintf("%s%s", os.Getenv("HOME"), path[1:])
+	} else {
+		path = fmt.Sprintf("/%s", path)
+	}
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		http.NotFound(w, req)
+		return
+	}
+	gitHandler := gitSocketHandlerFactory(path)
+	s := websocket.Server{Handler: websocket.Handler(gitHandler)}
+	s.ServeHTTP(w, req)
+}
+
+func gitSocketHandlerFactory(path string) func(ws *websocket.Conn) {
 	// just injecting path into websocket handler.
 	return func(ws *websocket.Conn) {
 		args := make([]byte, bufferSize)
@@ -61,27 +83,7 @@ func gitHandlerFactory(path string) func(ws *websocket.Conn) {
 func main() {
 	http.HandleFunc(
 		"/git",
-		func(w http.ResponseWriter, req *http.Request) {
-			params := req.URL.Query()
-			paths, ok := params["path"]
-			if !ok || len(paths) != 1 {
-				http.NotFound(w, req)
-				return
-			}
-			path := paths[0]
-			if path[0] == '~' {
-				path = fmt.Sprintf("%s%s", os.Getenv("HOME"), path[1:])
-			} else {
-				path = fmt.Sprintf("/%s", path)
-			}
-			if _, err := os.Stat(path); os.IsNotExist(err) {
-				http.NotFound(w, req)
-				return
-			}
-			gitHandler := gitHandlerFactory(path)
-			s := websocket.Server{Handler: websocket.Handler(gitHandler)}
-			s.ServeHTTP(w, req)
-		},
+		gitHandler,
 	)
 	http.Handle(
 		"/",
