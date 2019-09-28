@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"strings"
 
 	"golang.org/x/net/websocket"
 
@@ -85,10 +86,15 @@ func main() {
 		"/git",
 		gitHandler,
 	)
-	http.Handle(
-		"/",
-		http.FileServer(http.Dir("dist/")),
-	)
+
+	http.HandleFunc("/_nuxt/", func(w http.ResponseWriter, r *http.Request) {
+		path := strings.Trim(r.URL.Path, "/")
+		http.ServeFile(w, r, fmt.Sprintf("dist/%s", path))
+	})
+
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "dist/index.html")
+	})
 
 	host := flag.String("host", defaultHost, "host address")
 	port := flag.Int("port", defaultPort, "port number")
