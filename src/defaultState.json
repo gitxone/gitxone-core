@@ -1,10 +1,81 @@
 {
   "topZ": 0,
   "panes": {
-    "default1": {"command": "log --graph --pretty=format:'%h %ad %s %d' --all --date=format:'%y%m%d %H:%M'", "x": 100, "y": 0, "width": 500, "height": 200},
-    "default2": {"command": "status --short", "x": 0, "y": 200, "width": 200, "height": 100},
-    "default3": {"command": "branch", "x": 0, "y": 400, "width": 200, "height": 100},
-    "default4": {"command": "tag", "x": 0, "y": 500, "width": 200, "height": 100},
-    "default5": {"command": "remote", "x": 0, "y": 600, "width": 200, "height": 100}
+    "id1": {
+      "command": "log -1000 --graph --pretty=format:'%h %ad %s %d' --all --date=format:'%y%m%d %H:%M'",
+      "width": 675,
+      "height": 548,
+      "x": 387,
+      "y": 174,
+      "z": 264
+    },
+    "id2": {
+      "command": "status --short",
+      "width": 388,
+      "height": 423,
+      "x": 0,
+      "y": 0,
+      "z": 247
+    },
+    "id3": {
+      "command": "branch -a",
+      "width": 388,
+      "height": 329,
+      "x": 0,
+      "y": 303,
+      "z": 251
+    },
+    "id4": {
+      "command": "diff",
+      "width": 602,
+      "height": 212,
+      "x": 730,
+      "y": 174,
+      "z": 261
+    },
+    "id5": {
+      "command": "remote -v",
+      "width": 602,
+      "height": 114,
+      "x": 730,
+      "y": 609,
+      "z": 263
+    },
+    "id6": {
+      "command": "",
+      "post": "clear",
+      "width": 777,
+      "height": 177,
+      "x": 285,
+      "y": 0,
+      "z": 250
+    },
+    "id7": {
+      "command": "diff --cached",
+      "post": "",
+      "width": 602,
+      "height": 224,
+      "x": 730,
+      "y": 386,
+      "z": 262
+    },
+    "id8": {
+      "command": "stash list",
+      "post": "",
+      "width": 273,
+      "height": 177,
+      "x": 1059,
+      "y": 0,
+      "z": 260
+    },
+    "id9": {
+      "command": "tag",
+      "post": "",
+      "width": 388,
+      "height": 123,
+      "x": 0,
+      "y": 600,
+      "z": 252
+    }
   }
 }
