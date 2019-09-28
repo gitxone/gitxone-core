@@ -4,14 +4,17 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"os/exec"
-	"strings"
 
 	"golang.org/x/net/websocket"
 
 	"github.com/gitxone/gitxone-core/parsers"
+	"github.com/rakyll/statik/fs"
+
+	_ "github.com/gitxone/gitxone-core/statik"
 )
 
 const defaultHost = ""
@@ -82,18 +85,19 @@ func gitSocketHandlerFactory(path string) func(ws *websocket.Conn) {
 }
 
 func main() {
-	http.HandleFunc(
-		"/git",
-		gitHandler,
-	)
+	http.HandleFunc("/git", gitHandler)
 
-	http.HandleFunc("/_nuxt/", func(w http.ResponseWriter, r *http.Request) {
-		path := strings.Trim(r.URL.Path, "/")
-		http.ServeFile(w, r, fmt.Sprintf("dist/%s", path))
-	})
-
+	statikFS, _ := fs.New()
+	http.Handle("/_nuxt/", http.FileServer(statikFS))
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "dist/index.html")
+		f, err := statikFS.Open("/index.html")
+		if err != nil {
+			log.Fatal(err)
+		}
+		fi, _ := f.Stat()
+		data := make([]byte, fi.Size())
+		f.Read(data)
+		w.Write(data)
 	})
 
 	host := flag.String("host", defaultHost, "host address")
