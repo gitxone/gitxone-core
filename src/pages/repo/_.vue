@@ -50,8 +50,6 @@ interface ComponentInterface extends Vue {
   path: String,
 }
 
-
-
 function makeSocket(this: any) {
   this.socket = new WebSocket(`ws://${location.hostname}:10098/git?path=${this.path}`)
   this.socket.addEventListener('close', (event: Event) => {
@@ -81,105 +79,104 @@ interface MenuType {
   }
 })
 export default class VueComponent extends Vue {
-  data = function () {
-    return {
-      socket: null,
-      menu: [
+  socket = null;
+  menu = [
+    {
+      header: true,
+      title: 'Gitxone',
+      hiddenOnCollapse: true
+    },
+    {
+      title: 'New command',
+      operation: 'command',
+      post: '',
+      icon: 'fa fa-terminal',
+      child: [
         {
-          header: true,
-          title: 'Gitxone',
-          hiddenOnCollapse: true
-        },
-        {
-          title: 'New command',
+          title: '&& clear',
+          icon: 'far fa-window-restore',
           operation: 'command',
-          post: '',
-          icon: 'fa fa-terminal',
+          post: 'clear',
           child: [
             {
-              title: '&& clear',
-              icon: 'far fa-window-restore',
+              title: 'git commit -m ',
               operation: 'command',
+              command: 'commit -m ',
               post: 'clear',
-              child: [
-                {
-                  title: 'git commit -m ',
-                  operation: 'command',
-                  command: 'commit -m ',
-                  post: 'clear',
-                },
-              ],
             },
+          ],
+        },
+        {
+          title: '&& exit (close)',
+          icon: 'fas fa-times',
+          operation: 'command',
+          post: 'exit',
+          child: [
             {
-              title: '&& exit (close)',
-              icon: 'fas fa-times',
+              title: 'git add *',
               operation: 'command',
+              command: 'add *',
               post: 'exit',
-              child: [
-                {
-                  title: 'git add *',
-                  operation: 'command',
-                  command: 'add *',
-                  post: 'exit',
-                },
-              ],
             },
+          ],
+        },
 
-          ]
-        },
-        {
-            href: '/',
-            title: 'Home',
-            icon: 'fa fa-home'
-        },
-        {
-          operation: 'url',
-          url: 'https://github.com/gitxone/gitxone-core',
-          title: 'Github',
-          icon: 'fab fa-github',
-        },
       ]
+    },
+    {
+      href: '/',
+      title: 'Home',
+      icon: 'fa fa-home'
+    },
+    {
+      operation: 'url',
+      url: 'https://github.com/gitxone/gitxone-core',
+      title: 'Github',
+      icon: 'fab fa-github',
+    },
+  ];
+
+  get path (this: any): string {
+    return this.$route.params.pathMatch
+  }
+
+  get repo (this: any): RepoState {
+    const repo = this.$store.state.repos[this.path] || defaultState
+    return repo
+  }
+
+  get panes (this: any): PanesType {
+    return this.repo.panes
+  }
+
+  get paneItems (this: any) {
+    return Object.entries(this.panes)
+  }
+
+  handleMenuClick (this: any, event: Event, item: MenuType) {
+    switch(item.operation) {
+      case 'command':
+        this.$store.commit(INC_TOPZ, {path: this.path})
+        this.$store.commit(ADD_PANE, {path: this.path, z: this.repo.topZ, command: item.command || '', post: item.post || ''})
+        break
+      case 'url':
+        window.open(item.url)
+        break
     }
   }
-  computed = {
-    path (this: any): string {
-      return this.$route.params.pathMatch
-    },
-    repo (this: any): RepoState {
-      const repo = this.$store.state.repos[this.path] || defaultState
-      return repo
-    },
-    panes (this: any): PanesType {
-      return this.repo.panes
-    },
-    paneItems (this: any) {
-      return Object.entries(this.panes)
-    },
-  }
-  methods = {
-    handleMenuClick: function (this: any, event: Event, item: MenuType) {
-      switch(item.operation) {
-        case 'command':
-          this.$store.commit(INC_TOPZ, {path: this.path})
-          this.$store.commit(ADD_PANE, {path: this.path, z: this.repo.topZ, command: item.command || '', post: item.post || ''})
-          break
-        case 'url':
-          window.open(item.url)
-          break
-      }
-    },
-    loadAll: function (this: any, event: Event) {
-      for (let [id, pane] of this.paneItems) {
-        if (pane.post || !pane.command) { continue }
-        const params = JSON.stringify({id, command: pane.command})
-        this.socket.send(params)
-      }
+
+  loadAll (this: any, event: Event) {
+    for (let [id, pane] of this.paneItems) {
+      if (pane.post || !pane.command) { continue }
+      const params = JSON.stringify({id, command: pane.command})
+      this.socket.send(params)
     }
   }
-  created = function (this: any) {
+
+  created (this: any) {
     makeSocket.call(this)
   }
-  mounted = function (this: any) {
+  mounted (this: any) {
     setTimeout(this.loadAll, 500)
     setTimeout(() => {
       //if (this.socket.readyState !== 1) { return }

@@ -134,91 +134,64 @@ function handleSocketCreated (this: any) {
   }
 })
 export default class VueComponent extends Vue {
-  props = {
-    initialCommand: {
-      type: String,
-      require: false,
-    },
-    post: {
-      type: String,
-      require: false,
-    },
-    id: {
-      type: String,
-      require: false,
-    },
-    path: {
-      type: String,
-      require: false,
-    },
-    socket: {
-      type: WebSocket,
-      require: true,
-    },
-    loadAll: {
-      type: Function,
-      require: true,
-    },
-    width: {
-      type: Number,
-      require: true,
-    },
-    height: {
-      type: Number,
-      require: true,
-    },
-    x: {
-      type: Number,
-      require: true,
-    },
-    y: {
-      type: Number,
-      require: true,
-    },
-    z: {
-      type: Number,
-      require: true,
-    },
+  @Prop()
+  initialCommand?: string;
+  @Prop()
+  post?: string;
+  @Prop()
+  id?: string;
+  @Prop()
+  path?: string;
+  @Prop()
+  socket?: WebSocket ;
+  @Prop()
+  loadAll?: Function;
+  @Prop()
+  width: number = 0;
+  @Prop()
+  height: number = 0;
+  @Prop()
+  x: number = 0;
+  @Prop()
+  y: number = 0;
+  @Prop()
+  z: number = 0;
+
+  result = '';
+  error = '';
+  processing = false;
+  command = this.initialCommand;
+
+  handleEnter (this: any, event: Event) {
+    if (this.command == 'exit') {
+      this.$store.commit(DEL_PANE, {path: this.path, id: this.id})
+    } 
+    else {
+      if (!this.command) { return }
+      this.processing = true
+      const params = JSON.stringify({command: this.command, id: this.id})
+      this.socket.send(params)
+      this.$store.commit(SET_PANE, {path: this.path, id: this.id, command: this.command})
+    }
+    this.$store.commit(SAVE_REPOS)
   }
-  data = ({initialCommand, processing}: any) => ({
-    result: '',
-    error: '',
-    processing,
-    command: initialCommand || '',
-  })
-  methods = {
-    handleEnter: function (this: any, event: Event) {
-      if (this.command == 'exit') {
-        this.$store.commit(DEL_PANE, {path: this.path, id: this.id})
-      } 
-      else {
-        if (!this.command) { return }
-        this.processing = true
-        const params = JSON.stringify({command: this.command, id: this.id})
-        this.socket.send(params)
-        this.$store.commit(SET_PANE, {path: this.path, id: this.id, command: this.command})
-      }
-      this.$store.commit(SAVE_REPOS)
-    },
-    handleResize: function (this: any, x: number, y: number, width: number, height: number) {
-      this.$store.commit(SET_PANE, {path: this.path, id: this.id, x, y, width, height})
-      this.$store.commit(SAVE_REPOS)
-    },
-    handleDrag: function (this: any, x: number, y: number) {
-      this.$store.commit(SET_PANE, {path: this.path, id: this.id, x, y})
-      this.$store.commit(SAVE_REPOS)
-    },
-    handleClick: function (this: any) {
-      this.$store.commit(INC_TOPZ, {path: this.path})
-      this.$store.commit(SET_PANE, {path: this.path, id: this.id, z: this.repo.topZ})
-      this.$store.commit(SAVE_REPOS)
-    },
+  handleResize (this: any, x: number, y: number, width: number, height: number) {
+    this.$store.commit(SET_PANE, {path: this.path, id: this.id, x, y, width, height})
+    this.$store.commit(SAVE_REPOS)
   }
-  computed = {
-    repo: function (this: any): RepoState {
-      return this.$store.state.repos[this.path]
-    },
+  handleDrag (this: any, x: number, y: number) {
+    this.$store.commit(SET_PANE, {path: this.path, id: this.id, x, y})
+    this.$store.commit(SAVE_REPOS)
   }
+  handleClick (this: any) {
+    this.$store.commit(INC_TOPZ, {path: this.path})
+    this.$store.commit(SET_PANE, {path: this.path, id: this.id, z: this.repo.topZ})
+    this.$store.commit(SAVE_REPOS)
+  }
+  get repo (this: any): RepoState {
+    return this.$store.state.repos[this.path]
+  }
+
   public mounted () {
     handleSocketCreated.call(this)
   }
