@@ -36,7 +36,3 @@
 [prune]
   go-tests = true
   unused-packages = true
-
-[[constraint]]
-  name = "github.com/oxequa/realize"
-  version = "2.0.2"
