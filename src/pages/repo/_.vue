@@ -28,7 +28,7 @@
 import moment from 'moment'
 import '@fortawesome/fontawesome-free/js/all.js'
 
-import Vue from 'vue'
+import { Component, Prop, Vue } from 'vue-property-decorator'
 import { mapMutations } from 'vuex'
 import VueDraggableResizable from 'vue-draggable-resizable'
 import { SidebarMenu } from 'vue-sidebar-menu'
@@ -39,26 +39,49 @@ import {
   INC_TOPZ,
   SET_REPO,
   SAVE_REPOS,
-} from '@/store/mutationTypes.ts'
+} from '@/store/mutationTypes'
+import { RepoState, PanesType } from '@/store/types'
 import defaultState from '@/defaultState.json'
 
 import Pane from '@/components/Pane.vue'
 
-function makeSocket() {
+interface ComponentInterface extends Vue {
+  socket: WebSocket,
+  path: String,
+}
+
+
+
+function makeSocket(this: any) {
   this.socket = new WebSocket(`ws://${location.hostname}:10098/git?path=${this.path}`)
-  this.socket.addEventListener('close', (event) => {
+  this.socket.addEventListener('close', (event: Event) => {
     makeSocket.call(this)
   })
 }
 
+interface MenuType {
+  header?: boolean,
+  hiddenOnCollapse?: boolean,
+  title?: string,
+  operation?: string,
+  command: string,
+  post?: string,
+  icon?: string,
+  href?: string,
+  url?: string,
+  child?: MenuType[],
+}
 
-export default Vue.extend({
+
+@Component({
   components: {
     'vue-draggable-resizable': VueDraggableResizable,
     'sidebar-menu': SidebarMenu,
     Pane,
-  },
-  data: function () {
+  }
+})
+export default class VueComponent extends Vue {
+  data = function () {
     return {
       socket: null,
       menu: [
@@ -117,24 +140,24 @@ export default Vue.extend({
         },
       ]
     }
-  },
-  computed: {
-    path () {
+  }
+  computed = {
+    path (this: any): string {
       return this.$route.params.pathMatch
     },
-    repo () {
+    repo (this: any): RepoState {
       const repo = this.$store.state.repos[this.path] || defaultState
       return repo
     },
-    panes () {
+    panes (this: any): PanesType {
       return this.repo.panes
     },
-    paneItems () {
+    paneItems (this: any) {
       return Object.entries(this.panes)
     },
-  },
-  methods: {
-    handleMenuClick: function (event, item) {
+  }
+  methods = {
+    handleMenuClick: function (this: any, event: Event, item: MenuType) {
       switch(item.operation) {
         case 'command':
           this.$store.commit(INC_TOPZ, {path: this.path})
@@ -145,18 +168,18 @@ export default Vue.extend({
           break
       }
     },
-    loadAll: function (event) {
+    loadAll: function (this: any, event: Event) {
       for (let [id, pane] of this.paneItems) {
         if (pane.post || !pane.command) { continue }
         const params = JSON.stringify({id, command: pane.command})
         this.socket.send(params)
       }
     }
-  },
-  created () {
+  }
+  created = function (this: any) {
     makeSocket.call(this)
-  },
-  mounted () {
+  }
+  mounted = function (this: any) {
     setTimeout(this.loadAll, 500)
     setTimeout(() => {
       //if (this.socket.readyState !== 1) { return }
@@ -164,7 +187,7 @@ export default Vue.extend({
       this.$store.commit(SAVE_REPOS)
     }, 500)
   }
-})
+}
 </script>
 
 <style lang="stylus">

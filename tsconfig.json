@@ -1,16 +1,18 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "noImplicitAny": true,
+    "target": "esnext",
+    "module": "esnext",
+    "noImplicitAny": false,
+    "noImplicitThis": false,
     "removeComments": true,
     "resolveJsonModule": true,
     "preserveConstEnums": true,
     "sourceMap": true,
     "types": [
       "@types/node",
+      "@nuxt/types",
       "@nuxt/vue-app"
     ],
-    "target": "esnext",
     "moduleResolution": "node",
     "lib": [
       "esnext",
@@ -28,7 +30,7 @@
         "./*"
       ],
       "@/*": [
-        "./*"
+        "./src/*"
       ]
     }
   },

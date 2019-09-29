@@ -4,12 +4,20 @@ if (!window.localStorage) {
   alert(MSG_DISABLED_LOCALSTORAGE)
 }
 
-export const get = (key: string) => {
-  return window.localStorage[key]
+export const get = (key: string, json=true) => {
+  const value = window.localStorage[key]
+  if (!json) {
+    return value
+  }
+  try {
+    return JSON.parse(value)
+  } catch {
+    return null
+  }
 }
 
-export const set = (key: string, value: any) => {
-  window.localStorage.setItem(key, value)
+export const set = (key: string, value: any, json=true) => {
+  window.localStorage.setItem(key, json ? JSON.stringify(value) : value)
 }
 
 export const setData = (data: {[s: string]: any}) => {

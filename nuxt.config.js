@@ -37,6 +37,7 @@ export default {
   ** Nuxt.js dev-modules
   */
   buildModules: [
+    '@nuxt/typescript-build'
   ],
   /*
   ** Nuxt.js modules
@@ -58,5 +59,5 @@ export default {
 
   }
 },
-extensions: ['ts', 'js'],
+extensions: ['ts'],
 }

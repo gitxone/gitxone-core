@@ -1,19 +1,24 @@
-export interface StyleType {[s: string]: any}
 
-
-export interface PanePropsType {
+export interface PaneType {
   command: string,
+  width: number,
+  height: number,
   x: number,
   y: number,
   z: number,
-  width: number,
-  height: number,
-  style: StyleType,
+  path: string,
+  id: string,
 }
 
-export type PanePropsListType = PanePropsType[]
+export type PanesType = { [id: string]: PaneType }
 
-export interface MainState {
-  paneList: PanePropsListType,
-  serial: number,
+export interface RepoState {
+  panes: PanesType,
+  topZ: number,
+}
+
+export type ReposState = { [path: string]: RepoState }
+
+export interface StoreState {
+  repos: ReposState,
 }

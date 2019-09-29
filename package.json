@@ -5,28 +5,31 @@
   "author": "righ",
   "private": true,
   "scripts": {
-    "dev": "nuxt --hostname 0.0.0.0",
-    "build": "nuxt build",
-    "start": "nuxt start",
-    "generate": "nuxt generate",
+    "dev": "nuxt-ts --hostname 0.0.0.0",
+    "build": "nuxt-ts build",
+    "start": "nuxt-ts start",
+    "generate": "nuxt-ts generate",
     "test": "jest"
   },
   "dependencies": {
     "@types/uuid": "^3.4.5",
     "moment": "^2.24.0",
     "nuxt": "^2.9.2",
+    "@nuxt/typescript-runtime": "^0.1.7",
     "uuid": "^3.3.3",
     "vue-draggable-resizable": "^2.0.1",
     "vue-sidebar-menu": "^4.2.1"
   },
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^5.11.1",
+    "@nuxt/types": "^0.2.15",
     "@nuxt/typescript": "^2.8.1",
+    "@nuxt/typescript-build": "^0.2.10",
     "@vue/test-utils": "^1.0.0-beta.27",
     "babel-core": "7.0.0-bridge.0",
     "babel-jest": "^24.1.0",
     "css-loader": "^3.2.0",
-    "jest": "^24.1.0",
+    "jest": "^24.9.0",
     "nodemon": "^1.18.9",
     "postcss-loader": "^3.0.0",
     "style-loader": "^1.0.0",
@@ -34,6 +37,8 @@
     "stylus-loader": "^3.0.2",
     "ts-loader": "^6.1.0",
     "typescript": "^3.6.3",
-    "vue-jest": "^3.0.3"
+    "vue-class-component": "^7.1.0",
+    "vue-jest": "^3.0.5",
+    "vue-property-decorator": "^8.2.2"
   }
 }

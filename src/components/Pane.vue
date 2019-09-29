@@ -87,8 +87,9 @@
 </style>
 
 <script lang="ts">
-import Vue from 'vue'
-import { mapMutations } from 'vuex'
+import { mapMutations, Store } from 'vuex'
+import { Prop, Vue } from 'vue-property-decorator'
+import Component from 'vue-class-component'
 import VueDraggableResizable from 'vue-draggable-resizable'
 import 'vue-draggable-resizable/dist/VueDraggableResizable.css'
 
@@ -98,10 +99,11 @@ import {
   INC_TOPZ,
   DEL_REPO,
   SAVE_REPOS,
-} from '@/store/mutationTypes.ts'
+} from '@/store/mutationTypes'
+import { StoreState, RepoState } from '@/store/types'
 
-function handleSocketCreated () {
-    this.socket.addEventListener('message', (event) => {
+function handleSocketCreated (this: any) {
+    this.socket.addEventListener('message', (event: {data: any}) => {
       const data = JSON.parse(event.data)
       if (this.id !== data.id) {
         return
@@ -126,23 +128,66 @@ function handleSocketCreated () {
 
 }
 
-export default Vue.extend({
+@Component({
   components: {
     'vue-draggable-resizable': VueDraggableResizable,
-  },
-  props: [
-    'initialCommand', 'post', 'id', 'path',
-    'socket', 'loadAll',
-    'width', 'height', 'x', 'y', 'z',
-  ],
-  data: ({initialCommand, processing}) => ({
+  }
+})
+export default class VueComponent extends Vue {
+  props = {
+    initialCommand: {
+      type: String,
+      require: false,
+    },
+    post: {
+      type: String,
+      require: false,
+    },
+    id: {
+      type: String,
+      require: false,
+    },
+    path: {
+      type: String,
+      require: false,
+    },
+    socket: {
+      type: WebSocket,
+      require: true,
+    },
+    loadAll: {
+      type: Function,
+      require: true,
+    },
+    width: {
+      type: Number,
+      require: true,
+    },
+    height: {
+      type: Number,
+      require: true,
+    },
+    x: {
+      type: Number,
+      require: true,
+    },
+    y: {
+      type: Number,
+      require: true,
+    },
+    z: {
+      type: Number,
+      require: true,
+    },
+  }
+  data = ({initialCommand, processing}: any) => ({
     result: '',
     error: '',
     processing,
     command: initialCommand || '',
-  }),
-  methods: {
-    handleEnter: function (event) {
+  })
+  methods = {
+    handleEnter: function (this: any, event: Event) {
       if (this.command == 'exit') {
         this.$store.commit(DEL_PANE, {path: this.path, id: this.id})
       } 
@@ -155,31 +200,30 @@ export default Vue.extend({
       }
       this.$store.commit(SAVE_REPOS)
     },
-    handleResize: function (x, y, width, height) {
+    handleResize: function (this: any, x: number, y: number, width: number, height: number) {
       this.$store.commit(SET_PANE, {path: this.path, id: this.id, x, y, width, height})
       this.$store.commit(SAVE_REPOS)
     },
-    handleDrag: function (x, y) {
+    handleDrag: function (this: any, x: number, y: number) {
       this.$store.commit(SET_PANE, {path: this.path, id: this.id, x, y})
       this.$store.commit(SAVE_REPOS)
     },
-    handleClick: function () {
+    handleClick: function (this: any) {
       this.$store.commit(INC_TOPZ, {path: this.path})
       this.$store.commit(SET_PANE, {path: this.path, id: this.id, z: this.repo.topZ})
       this.$store.commit(SAVE_REPOS)
     },
-  },
-  computed: {
-    repo: function () {
+  }
+  computed = {
+    repo: function (this: any): RepoState {
       return this.$store.state.repos[this.path]
     },
-  },
-  mounted: function () {
+  }
+  public mounted () {
     handleSocketCreated.call(this)
-  },
-  updated: function () {
+  }
+  public updated () {
     handleSocketCreated.call(this)
-  },
-
-})
+  }
+}
 </script>

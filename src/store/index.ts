@@ -1,32 +1,73 @@
-import { PanePropsListType, MainState } from './types'
+import uuid from 'uuid'
+import {
+  SET_PANE,
+  ADD_PANE,
+  DEL_PANE,
 
-export const SET_PANE_LIST = 'setPaneList'
-export const SET_SERIAL = 'setSerial'
-export const INCREMENT_SERIAL = 'incrementSerial'
+  INC_TOPZ,
 
-export const state = () => ({
-  serial: 1,
-  paneList: [
-    {command: 'log --graph --pretty=format:"%h %ad %s %d" --all --date=format:"%y%m%d %H:%M"', x: 100, y: 0, width: 500, height: 200, style: {}},
-    {command: "status --short", x: 0, y: 200, width: 200, height: 100, style: {}},
-    {command: "branch", x: 0, y: 400, width: 200, height: 100, style: {}},
-    {command: "tag", x: 0, y: 500, width: 200, height: 100, style: {}},
-    {command: "remote", x: 0, y: 600, width: 200, height: 100, style: {}},
+  SET_REPO,
+  DEL_REPO,
+  SAVE_REPOS,
+} from './mutationTypes'
+import { StoreState, PaneType } from './types'
+import {get, set} from '../persistence'
 
-  ]
-})
-export const actions = {}
+const REPOS_KEY = 'repos'
+
+export const state = () => {
+  const repos = get(REPOS_KEY) || {}
+  return {repos}
+}
 export const mutations = {
-  [SET_PANE_LIST](state: MainState, paneList: PanePropsListType) {
-    state.paneList = paneList
+  [SET_PANE](state: StoreState, payload: PaneType) {
+    const {path, id} = payload
+    const repos = state[REPOS_KEY]
+    const repo = repos[path]
+    const pane = repo.panes[id]
+    repo.panes[id] = {... pane, ... payload}
+    state[REPOS_KEY] = {... repos}
   },
-  [SET_SERIAL](state: MainState, serial: number) {
-    state.serial = serial
+  [ADD_PANE](state: StoreState, payload: PaneType) {
+    const {path} = payload
+    const repos = state[REPOS_KEY]
+    const repo = repos[path]
+    const id = uuid.v1()
+    const pane = {id, width: 400, height: 200, x: 100, y: 100, ... payload}
+    repo.panes = {... repo.panes, [id]: pane}
+    state[REPOS_KEY] = {... repos}
   },
-  [INCREMENT_SERIAL](state: MainState) {
-    console.log('state:', state);
-    state.serial = state.serial + 1
-    return state.serial
+  [DEL_PANE](state: StoreState, payload: {id: string, path: string}) {
+    const {path, id} = payload
+    const repos = state[REPOS_KEY]
+    const repo = repos[path]
+    delete repo.panes[id]
+    state[REPOS_KEY] = {... repos}
   },
+  [INC_TOPZ](state: StoreState, payload: {path: string}) {
+    const {path} = payload
+    const repos = state[REPOS_KEY]
+    const repo = repos[path]
+    repo.topZ++
+    state[REPOS_KEY] = {... repos}
+  },
+  [SET_REPO](state: StoreState, payload: {path: string}) {
+    const {path} = payload
+    const repos = state[REPOS_KEY]
+    repos[path] = {... repos[path], ... payload}
+    state[REPOS_KEY] = {... repos}
+  },
+  [DEL_REPO](state: StoreState, payload: {path: string}) {
+    const {path} = payload
+    const repos = state[REPOS_KEY]
+    delete repos[path]
+    state[REPOS_KEY] = {... repos}
+  },
+  [SAVE_REPOS](state: StoreState) {
+    set(REPOS_KEY, state[REPOS_KEY])
+  },
+}
+export const actions = {
+
 }
 export const getters = {}

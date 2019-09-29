@@ -42,7 +42,7 @@ import 'vue-sidebar-menu/dist/vue-sidebar-menu.css'
 import {
   DEL_REPO,
   SAVE_REPOS,
-} from '@/store/mutationTypes.ts'
+} from '@/store/mutationTypes'
 
 
 export default Vue.extend({
@@ -66,21 +66,21 @@ export default Vue.extend({
     repos () {
       return this.$store.state.repos
     },
-    repoItems () {
+    repoItems (this: any) {
       const items = [... Object.entries(this.repos || {})]
-      return items.sort((a, b) => a[1].lastAccess > b[1].lastAccess ? -1 : 1)
+      return items.sort((a: any, b: any) => a[1].lastAccess > b[1].lastAccess ? -1 : 1)
     },
   },
   methods: {
-    go: function () {
+    go: function (this: any) {
       const path = `/repo/${this.path.replace(/^\//g, '')}`
       this.$router.history.push(path)
     },
-    handleDelRepo: function (path) {
+    handleDelRepo: function (path: string) {
       this.$store.commit(DEL_REPO, {path})
       this.$store.commit(SAVE_REPOS)
     },
-    handleMenuClick: function (event, item) {
+    handleMenuClick: function (event: Event, item: any) {
       switch(item.operation) {
         case 'url':
           window.open(item.url)
