@@ -100,7 +100,8 @@ import {
   DEL_REPO,
   SAVE_REPOS,
 } from '@/store/mutationTypes'
-import { StoreState, RepoState } from '@/store/types'
+import { StoreState, RepoState, PaneType } from '@/store/types'
+import defaultState from '@/defaultState.json'
 
 function handleSocketCreated (this: any) {
     this.socket.addEventListener('message', (event: {data: any}) => {
@@ -146,16 +147,6 @@ export default class VueComponent extends Vue {
   socket?: WebSocket ;
   @Prop()
   loadAll?: Function;
-  @Prop()
-  width: number = 0;
-  @Prop()
-  height: number = 0;
-  @Prop()
-  x: number = 0;
-  @Prop()
-  y: number = 0;
-  @Prop()
-  z: number = 0;
 
   result = '';
   error = '';
@@ -188,8 +179,31 @@ export default class VueComponent extends Vue {
     this.$store.commit(SET_PANE, {path: this.path, id: this.id, z: this.repo.topZ})
     this.$store.commit(SAVE_REPOS)
   }
+
   get repo (this: any): RepoState {
-    return this.$store.state.repos[this.path]
+    return this.$store.state.repos[this.path] || defaultState
+  }
+  get pane (this: any): PaneType {
+    return this.repo.panes[this.id] || {}
+  }
+
+  get x (this: any): number {
+    const x = this.pane.x
+    return isNaN(x) ? 100 : x
+  }
+  get y (this: any): number {
+    const y = this.pane.y
+    return isNaN(y) ? 100 : y
+  }
+  get z (this: any): number {
+    const z = this.pane.z
+    return z
+  }
+  get width (this: any): number {
+    return this.pane.width || 300
+  }
+  get height (this: any): number {
+    return this.pane.height || 100
   }
 
   public mounted () {
