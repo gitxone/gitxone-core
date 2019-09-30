@@ -100,7 +100,7 @@ import {
   DEL_REPO,
   SAVE_REPOS,
 } from '@/store/mutationTypes'
-import { StoreState, RepoState, PaneType } from '@/store/types'
+import { StoreType, RepoType, PaneType } from '@/store/types'
 import defaultState from '@/defaultState.json'
 
 function handleSocketCreated (this: any) {
@@ -180,7 +180,7 @@ export default class VueComponent extends Vue {
     this.$store.commit(SAVE_REPOS)
   }
 
-  get repo (this: any): RepoState {
+  get repo (this: any): RepoType {
     return this.$store.state.repos[this.path] || defaultState
   }
   get pane (this: any): PaneType {

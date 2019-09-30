@@ -10,7 +10,7 @@ import {
   DEL_REPO,
   SAVE_REPOS,
 } from './mutationTypes'
-import { StoreState, PaneType } from './types'
+import { StoreType, PaneType } from './types'
 import {get, set} from '../persistence'
 
 const REPOS_KEY = 'repos'
@@ -20,7 +20,7 @@ export const state = () => {
   return {repos}
 }
 export const mutations = {
-  [SET_PANE](state: StoreState, payload: PaneType) {
+  [SET_PANE](state: StoreType, payload: PaneType) {
     const {path, id} = payload
     const repos = state[REPOS_KEY]
     const repo = repos[path]
@@ -28,7 +28,7 @@ export const mutations = {
     repo.panes[id] = {... pane, ... payload}
     state[REPOS_KEY] = {... repos}
   },
-  [ADD_PANE](state: StoreState, payload: PaneType) {
+  [ADD_PANE](state: StoreType, payload: PaneType) {
     const {path} = payload
     const repos = state[REPOS_KEY]
     const repo = repos[path]
@@ -37,33 +37,33 @@ export const mutations = {
     repo.panes = {... repo.panes, [id]: pane}
     state[REPOS_KEY] = {... repos}
   },
-  [DEL_PANE](state: StoreState, payload: {id: string, path: string}) {
+  [DEL_PANE](state: StoreType, payload: {id: string, path: string}) {
     const {path, id} = payload
     const repos = state[REPOS_KEY]
     const repo = repos[path]
     delete repo.panes[id]
     state[REPOS_KEY] = {... repos}
   },
-  [INC_TOPZ](state: StoreState, payload: {path: string}) {
+  [INC_TOPZ](state: StoreType, payload: {path: string}) {
     const {path} = payload
     const repos = state[REPOS_KEY]
     const repo = repos[path]
     repo.topZ++
     state[REPOS_KEY] = {... repos}
   },
-  [SET_REPO](state: StoreState, payload: {path: string}) {
+  [SET_REPO](state: StoreType, payload: {path: string}) {
     const {path} = payload
     const repos = state[REPOS_KEY]
     repos[path] = {... repos[path], ... payload}
     state[REPOS_KEY] = {... repos}
   },
-  [DEL_REPO](state: StoreState, payload: {path: string}) {
+  [DEL_REPO](state: StoreType, payload: {path: string}) {
     const {path} = payload
     const repos = state[REPOS_KEY]
     delete repos[path]
     state[REPOS_KEY] = {... repos}
   },
-  [SAVE_REPOS](state: StoreState) {
+  [SAVE_REPOS](state: StoreType) {
     set(REPOS_KEY, state[REPOS_KEY])
   },
 }

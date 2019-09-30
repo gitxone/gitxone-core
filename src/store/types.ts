@@ -12,13 +12,13 @@ export interface PaneType {
 
 export type PanesType = { [id: string]: PaneType }
 
-export interface RepoState {
+export interface RepoType {
   panes: PanesType,
   topZ: number,
 }
 
-export type ReposState = { [path: string]: RepoState }
+export type ReposType = { [path: string]: RepoType }
 
-export interface StoreState {
-  repos: ReposState,
+export interface StoreType {
+  repos: ReposType,
 }

@@ -40,7 +40,7 @@ import {
   SET_REPO,
   SAVE_REPOS,
 } from '@/store/mutationTypes'
-import { RepoState, PanesType } from '@/store/types'
+import { RepoType, PanesType } from '@/store/types'
 import defaultState from '@/defaultState.json'
 
 import Pane from '@/components/Pane.vue'
@@ -140,7 +140,7 @@ export default class VueComponent extends Vue {
     return this.$route.params.pathMatch
   }
 
-  get repo (this: any): RepoState {
+  get repo (this: any): RepoType {
     const repo = this.$store.state.repos[this.path] || defaultState
     return repo
   }
