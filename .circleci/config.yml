@@ -7,6 +7,7 @@ jobs:
     working_directory: /go/src/github.com/gitxone/gitxone-core
     steps:
       - checkout
+      - run: npm install
       - run: npm run build
       - run: dep ensure
       - run: statik -src=dist/
