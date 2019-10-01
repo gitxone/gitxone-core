@@ -7,8 +7,6 @@ jobs:
     working_directory: /go/src/github.com/gitxone/gitxone-core
     steps:
       - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
       - run: npm run build
       - run: dep ensure
       - run: statik -src=dist/
