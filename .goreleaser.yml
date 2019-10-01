@@ -1,0 +1,12 @@
+builds:
+  - goos:
+      - darwin
+      - linux
+      - windows
+    ignore:
+      - goos: darwin
+        goarch: 386
+archive:
+  format_overrides:
+    - goos: windows
+      format: zip

@@ -1,0 +1,15 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: gitxone/builder
+
+    working_directory: /go/src/github.com/gitxone/gitxone-core
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run: npm run build
+      - run: dep ensure
+      - run: statik -src=dist/
+      - run: curl -sL https://git.io/goreleaser | bash
