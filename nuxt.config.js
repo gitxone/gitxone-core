@@ -3,7 +3,7 @@ export default {
   mode: 'spa',
   srcDir: 'src/',
   generate: {
-    dir: 'dist',
+    dir: 'nuxt-dist',
   },
   head: {
     title: process.env.npm_package_name || '',
