@@ -5,7 +5,7 @@ const singleQuot = '\''
 const backSlash = '\\'
 const space = ' '
 
-// ParseCommand split a string to tokens for exec.Command
+// ParseCommand splits a string to tokens for exec.Command
 func ParseCommand(s string) []string {
 	var prevChar rune
 	var quot rune
