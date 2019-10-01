@@ -1,15 +1,26 @@
 
-# Usage
-
-
 # Downloads
+
+Get the binary suiting you from the following link:
+https://github.com/gitxone/gitxone-core/releases
+
+
+# Usage
+- Start up the server.
+  ```bash
+  $ ./gitxone-core_0.0.2_darwin_amd64/gitxone-core
+  ```
+
+- Go to http://localhost:10098/
+
 
 
 # Development
 
-```bash
-$ docker-compose up
-```
+- Start up next server.
+  ```bash
+  $ docker-compose up
+  ```
 
-And go to `localhost:3000/`.
+- Go to http://localhost:3000/
 
