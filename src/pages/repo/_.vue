@@ -17,8 +17,6 @@
     :initialCommand="pane.command"
     :post="pane.post"
     :path="path"
-    :socket="socket"
-    :loadAll="loadAll"
   ></Pane>
 </div>
 </div>
@@ -45,18 +43,6 @@ import defaultState from '@/defaultState.json'
 
 import Pane from '@/components/Pane.vue'
 
-interface ComponentInterface extends Vue {
-  socket: WebSocket,
-  path: String,
-}
-
-function makeSocket(this: any) {
-  this.socket = new WebSocket(`ws://${location.hostname}:10098/git?path=${this.path}`)
-  this.socket.addEventListener('close', (event: Event) => {
-    makeSocket.call(this)
-  })
-}
-
 interface MenuType {
   header?: boolean,
   hiddenOnCollapse?: boolean,
@@ -79,7 +65,6 @@ interface MenuType {
   }
 })
 export default class VueComponent extends Vue {
-  socket = null;
   menu = [
     {
       header: true,
@@ -163,26 +148,6 @@ export default class VueComponent extends Vue {
         window.open(item.url)
         break
     }
-  }
-
-  loadAll (this: any, event: Event) {
-    for (let [id, pane] of this.paneItems) {
-      if (pane.post || !pane.command) { continue }
-      const params = JSON.stringify({id, command: pane.command})
-      this.socket.send(params)
-    }
-  }
-
-  created (this: any) {
-    makeSocket.call(this)
-  }
-  mounted (this: any) {
-    setTimeout(this.loadAll, 500)
-    setTimeout(() => {
-      //if (this.socket.readyState !== 1) { return }
-      this.$store.commit(SET_REPO, {... this.repo, path: this.path, lastAccess: moment().format('YYYY-MM-DD HH:mm')})
-      this.$store.commit(SAVE_REPOS)
-    }, 500)
   }
 }
 </script>

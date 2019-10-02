@@ -7,3 +7,5 @@ export const INC_TOPZ = 'incTopZ'
 export const SET_REPO = 'setRepo'
 export const DEL_REPO = 'delRepo'
 export const SAVE_REPOS = 'saveRepos'
+
+export const INC_CONN = 'incConn'

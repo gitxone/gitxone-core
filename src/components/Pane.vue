@@ -99,35 +99,47 @@ import {
   INC_TOPZ,
   DEL_REPO,
   SAVE_REPOS,
+  INC_CONN,
 } from '@/store/mutationTypes'
 import { StoreType, RepoType, PaneType } from '@/store/types'
 import defaultState from '@/defaultState.json'
 
-function handleSocketCreated (this: any) {
-    this.socket.addEventListener('message', (event: {data: any}) => {
-      const data = JSON.parse(event.data)
-      if (this.id !== data.id) {
-        return
-      }
-      this.result = data.content || ''
-      this.error =  data.error || ''
-      switch (this.post) {
-        case 'exit':
-          this.$store.commit(DEL_PANE, {path: this.path, id: this.id})
-          this.loadAll()
-          break
-        case 'clear':
-          this.command = ''
-          this.$store.commit(SET_PANE, {path: this.path, id: this.id, command: ''})
-          this.loadAll()
-          break
-      }
-      this.$store.commit(SAVE_REPOS)
-      this.processing = false
-      this.$forceUpdate()
-    }, false)
 
+function makeSocket(this: any) {
+  const socket = new WebSocket(`ws://${location.hostname}:10098/git?path=${this.path}`)
+
+  socket.addEventListener('open', (event: Event) => {
+    if (!this.post) {
+      this.send()
+    }
+  })
+
+  socket.addEventListener('close', (event: Event) => {
+    makeSocket.call(this)
+  })
+
+  socket.addEventListener('message', (event: {data: any}) => {
+    const data = JSON.parse(event.data)
+    this.result = data.content || ''
+    this.error =  data.error || ''
+    switch (this.post) {
+      case 'exit':
+        this.$store.commit(DEL_PANE, {path: this.path, id: this.id})
+        this.sync()
+        break
+      case 'clear':
+        this.command = ''
+        this.$store.commit(SET_PANE, {path: this.path, id: this.id, command: ''})
+        this.sync()
+        break
+    }
+    this.processing = false
+    this.$forceUpdate()
+  }, false)
+
+  this.socket = socket
 }
+
 
 @Component({
   components: {
@@ -143,15 +155,13 @@ export default class VueComponent extends Vue {
   id?: string;
   @Prop()
   path?: string;
-  @Prop()
-  socket?: WebSocket ;
-  @Prop()
-  loadAll?: Function;
 
   result = '';
   error = '';
   processing = false;
   command = this.initialCommand;
+  conn = this.$store.state.conn || 0
+  socket = null
 
   handleEnter (this: any, event: Event) {
     if (this.command == 'exit') {
@@ -160,8 +170,7 @@ export default class VueComponent extends Vue {
     else {
       if (!this.command) { return }
       this.processing = true
-      const params = JSON.stringify({command: this.command, id: this.id})
-      this.socket.send(params)
+      this.send()
       this.$store.commit(SET_PANE, {path: this.path, id: this.id, command: this.command})
     }
     this.$store.commit(SAVE_REPOS)
@@ -199,6 +208,7 @@ export default class VueComponent extends Vue {
     const z = this.pane.z
     return z
   }
+  
   get width (this: any): number {
     return this.pane.width || 300
   }
@@ -206,11 +216,30 @@ export default class VueComponent extends Vue {
     return this.pane.height || 100
   }
 
-  public mounted () {
-    handleSocketCreated.call(this)
+  public connSerial (this: any): number {
+    return this.$store.state.conn || 0
   }
+
+  public sync(this: any) {
+    this.conn ++
+    this.$store.commit(INC_CONN)
+  }
+
+  public send (this: any) {
+    if (!this.command) { return }
+    const params = JSON.stringify({command: this.command})
+    this.socket.send(params)
+    this.conn = this.connSerial()
+  }
+
+  public created () {
+    makeSocket.call(this)
+  }
+
   public updated () {
-    handleSocketCreated.call(this)
+    if (this.connSerial() > this.conn && !this.post) {
+      this.send()
+    }
   }
 }
 </script>

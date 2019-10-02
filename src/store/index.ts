@@ -9,11 +9,14 @@ import {
   SET_REPO,
   DEL_REPO,
   SAVE_REPOS,
+
+  INC_CONN,
 } from './mutationTypes'
 import { StoreType, PaneType } from './types'
 import {get, set} from '../persistence'
 
 const REPOS_KEY = 'repos'
+const CONN_KEY = 'conn'
 
 export const state = () => {
   const repos = get(REPOS_KEY) || {}
@@ -65,6 +68,10 @@ export const mutations = {
   },
   [SAVE_REPOS](state: StoreType) {
     set(REPOS_KEY, state[REPOS_KEY])
+  },
+  [INC_CONN](state: StoreType) {
+    let conn = state.conn || 0
+    state[CONN_KEY] = conn + 1
   },
 }
 export const actions = {

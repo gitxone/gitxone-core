@@ -21,4 +21,5 @@ export type ReposType = { [path: string]: RepoType }
 
 export interface StoreType {
   repos: ReposType,
+  conn: number,
 }
