@@ -34,8 +34,10 @@
 <script lang="ts">
 import '@fortawesome/fontawesome-free/js/all.js'
 
-import Vue from 'vue'
 import { mapMutations } from 'vuex'
+import { Prop, Vue } from 'vue-property-decorator'
+import Component from 'vue-class-component'
+
 import { SidebarMenu } from 'vue-sidebar-menu'
 import 'vue-sidebar-menu/dist/vue-sidebar-menu.css'
 
@@ -44,52 +46,53 @@ import {
   SAVE_REPOS,
 } from '@/store/mutationTypes'
 
+import {
+  RepoType,
+  ReposType,
+} from '@/store/types'
 
-export default Vue.extend({
+@Component({
   components: {
     'sidebar-menu': SidebarMenu,
-  },
-  data: function () {
-    return {
-      menu: [
-        {
-          operation: 'url',
-          url: 'https://github.com/gitxone/gitxone-core',
-          title: 'Github',
-          icon: 'fab fa-github',
-        },
-      ],
-      path: '~/',
-    }
-  },
-  computed: {
-    repos () {
-      return this.$store.state.repos
-    },
-    repoItems (this: any) {
-      const items = [... Object.entries(this.repos || {})]
-      return items.sort((a: any, b: any) => a[1].lastAccess > b[1].lastAccess ? -1 : 1)
-    },
-  },
-  methods: {
-    go: function (this: any) {
-      const path = `/repo/${this.path.replace(/^\//g, '')}`
-      this.$router.history.push(path)
-    },
-    handleDelRepo: function (path: string) {
-      this.$store.commit(DEL_REPO, {path})
-      this.$store.commit(SAVE_REPOS)
-    },
-    handleMenuClick: function (event: Event, item: any) {
-      switch(item.operation) {
-        case 'url':
-          window.open(item.url)
-          break
-      }
-    },
-
-  },
+  }
 })
+export default class Page extends Vue {
+  menu = [
+    {
+      operation: 'url',
+      url: 'https://github.com/gitxone/gitxone-core',
+      title: 'Github',
+      icon: 'fab fa-github',
+    },
+  ]
+  path = '~/'
+
+  get repos (this: any): ReposType {
+    return this.$store.state.repos
+  } 
+
+  get repoItems (this:any): any {
+    const items = [... Object.entries(this.repos || {})]
+    const sorter = (a: any, b: any) => a[1].lastAccess > b[1].lastAccess ? -1 : 1
+    return items.sort(sorter)
+  }
+
+  public go (this: any) {
+    const path = `/repo/${this.path.replace(/^\//g, '')}`
+    this.$router.history.push(path)
+  }
+  public handleDelRepo (path: string) {
+    this.$store.commit(DEL_REPO, {path})
+    this.$store.commit(SAVE_REPOS)
+  }
+  public handleMenuClick (event: Event, item: any) {
+    switch(item.operation) {
+      case 'url':
+        window.open(item.url)
+        break
+    }
+  }
+}
 </script>
 
 <style lang="stylus">

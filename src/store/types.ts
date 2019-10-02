@@ -15,6 +15,7 @@ export type PanesType = { [id: string]: PaneType }
 export interface RepoType {
   panes: PanesType,
   topZ: number,
+  lastAccess: string,
 }
 
 export type ReposType = { [path: string]: RepoType }

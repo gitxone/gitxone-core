@@ -138,6 +138,11 @@ export default class VueComponent extends Vue {
     return Object.entries(this.panes)
   }
 
+  mounted (this: any) {
+    this.$store.commit(SET_REPO, {... this.repo, path: this.path, lastAccess: moment().format('YYYY-MM-DD HH:mm')})
+    this.$store.commit(SAVE_REPOS)
+  }
+
   handleMenuClick (this: any, event: Event, item: MenuType) {
     switch(item.operation) {
       case 'command':

@@ -210,10 +210,10 @@ export default class VueComponent extends Vue {
   }
   
   get width (this: any): number {
-    return this.pane.width || 300
+    return this.pane.width || 400
   }
   get height (this: any): number {
-    return this.pane.height || 100
+    return this.pane.height || 150
   }
 
   public connSerial (this: any): number {
