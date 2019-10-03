@@ -11,7 +11,9 @@ import (
 
 	"golang.org/x/net/websocket"
 
+	"github.com/gitxone/gitxone-core/completion"
 	"github.com/gitxone/gitxone-core/parsers"
+
 	"github.com/rakyll/statik/fs"
 
 	_ "github.com/gitxone/gitxone-core/statik"
@@ -22,14 +24,15 @@ const defaultPort = 10098
 const bufferSize = 1024 * 8
 
 type Request struct {
-	Id      string `json:"id"`
+	Type    string `json:"type"`
 	Command string `json:"command"`
 }
 
 type Response struct {
-	Id      string `json:"id"`
-	Content string `json:"content"`
-	Err     string `json:"error"`
+	Type    string      `json:"type"`
+	Tokens  []string    `json:"tokens"`
+	Content interface{} `json:"content"`
+	Err     string      `json:"error"`
 }
 
 func gitHandler(w http.ResponseWriter, req *http.Request) {
@@ -67,16 +70,24 @@ func gitSocketHandlerFactory(path string) func(ws *websocket.Conn) {
 			json.Unmarshal(args[:n], &req)
 
 			tokens := parsers.ParseCommand(req.Command)
-			tokens = append([]string{"-C", path}, tokens...)
+			res := Response{Type: req.Type, Tokens: tokens}
+			switch req.Type {
+			case "exec":
+				realTokens := append([]string{"-C", path}, tokens...)
 
-			cmd := exec.Command("git", tokens...)
-			cmd.Env = []string{
-				"PAGER=cat",
-			}
-			out, err := cmd.CombinedOutput()
-			res := Response{Id: req.Id, Content: string(out)}
-			if err != nil {
-				res.Err = err.Error()
+				cmd := exec.Command("git", realTokens...)
+				cmd.Env = []string{
+					"PAGER=cat",
+				}
+				out, err := cmd.CombinedOutput()
+
+				res.Content = string(out)
+				if err != nil {
+					res.Err = err.Error()
+				}
+			case "complete":
+				cands := completion.Complete(path, tokens)
+				res.Content = cands
 			}
 			data, _ := json.Marshal(res)
 			ws.Write(data)

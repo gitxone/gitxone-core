@@ -18,8 +18,19 @@
       <input 
         placeholder="command or 'exit' to close" 
         v-model="command"
+        @keyup="handleComplete"
         @keyup.enter="handleEnter"
+        @keydown.tab="handleComplement"
+        autocomplete="on"
+        :list="`comp-list-${id}`"
       />
+      <datalist :id="`comp-list-${id}`">
+        <option 
+          v-for="c in candidates" 
+          :key="c"
+          :value="getCompletion(c)"
+        />
+      </datalist>
     </div>
     <div class="post-process" v-if="post">
       &amp;&amp; {{ post }}
@@ -104,6 +115,30 @@ import {
 import { StoreType, RepoType, PaneType } from '@/store/types'
 import defaultState from '@/defaultState.json'
 
+function handleExecMessage (data: any) {
+  this.result = data.content || ''
+  this.error =  data.error || ''
+  switch (this.post) {
+    case 'exit':
+      this.$store.commit(DEL_PANE, {path: this.path, id: this.id})
+      this.sync()
+      break
+    case 'clear':
+      this.command = ''
+      this.$store.commit(SET_PANE, {path: this.path, id: this.id, command: ''})
+      this.$store.commit(SAVE_REPOS)
+      this.sync()
+      break
+  }
+  this.processing = false
+  this.$forceUpdate()
+}
+
+function handleCompleteMessage (data: any) {
+  this.candidates = data.content
+}
+
+
 
 function makeSocket(this: any) {
   const socket = new WebSocket(`ws://${location.hostname}:10098/git?path=${this.path}`)
@@ -120,21 +155,14 @@ function makeSocket(this: any) {
 
   socket.addEventListener('message', (event: {data: any}) => {
     const data = JSON.parse(event.data)
-    this.result = data.content || ''
-    this.error =  data.error || ''
-    switch (this.post) {
-      case 'exit':
-        this.$store.commit(DEL_PANE, {path: this.path, id: this.id})
-        this.sync()
+    switch (data.type) {
+      case "exec":
+        handleExecMessage.call(this, data)
         break
-      case 'clear':
-        this.command = ''
-        this.$store.commit(SET_PANE, {path: this.path, id: this.id, command: ''})
-        this.sync()
+      case "complete":
+        handleCompleteMessage.call(this, data)
         break
     }
-    this.processing = false
-    this.$forceUpdate()
   }, false)
 
   this.socket = socket
@@ -156,12 +184,22 @@ export default class VueComponent extends Vue {
   @Prop()
   path?: string;
 
+  candidates = [];
   result = '';
   error = '';
   processing = false;
   command = this.initialCommand;
   conn = this.$store.state.conn || 0
   socket = null
+
+  handleComplete (this: any) {
+    this.complete()
+  }
+  handleComplement (this: any, event: Event) {
+    const common = this.getCommonString(this.candidates)
+    this.command = this.getCompletion(common)
+    event.preventDefault()
+  }
 
   handleEnter (this: any, event: Event) {
     if (this.command == 'exit') {
@@ -198,11 +236,11 @@ export default class VueComponent extends Vue {
 
   get x (this: any): number {
     const x = this.pane.x
-    return isNaN(x) ? 100 : x
+    return isNaN(x) ? 100 : x >= 0 ? x : 0
   }
   get y (this: any): number {
     const y = this.pane.y
-    return isNaN(y) ? 100 : y
+    return isNaN(y) ? 100 : y >= 0 ? y : 0
   }
   get z (this: any): number {
     const z = this.pane.z
@@ -220,6 +258,21 @@ export default class VueComponent extends Vue {
     return this.$store.state.conn || 0
   }
 
+  public getCommonString (paths: string[]): string {
+    let index = 0
+    let common = ""
+    while (true) {
+      const chars = paths.map(p => p[index])
+      index ++
+      if (chars[0] && chars.every(c => c === chars[0])) {
+        common += chars[0]
+      } else {
+        break
+      }
+    }
+    return common
+  }
+
   public sync(this: any) {
     this.conn ++
     this.$store.commit(INC_CONN)
@@ -227,9 +280,25 @@ export default class VueComponent extends Vue {
 
   public send (this: any) {
     if (!this.command) { return }
-    const params = JSON.stringify({command: this.command})
+    const type = 'exec'
+    const params = JSON.stringify({command: this.command, type})
     this.socket.send(params)
     this.conn = this.connSerial()
+  }
+  
+  public complete (this: any, event: Event) {
+    const type = 'complete'
+    const params = JSON.stringify({command: this.command, type})
+    this.socket.send(params)
+  }
+
+  public getCompletion(this: any, common: string): string {
+    const tokens = this.command.split(' ')
+    const lastToken = tokens[tokens.length - 1]
+    if (tokens.length == 1) {
+      return common || lastToken
+    }
+    return `${tokens.slice(0, -1).join(' ')} ${common || lastToken}`
   }
 
   public created () {
@@ -241,5 +310,6 @@ export default class VueComponent extends Vue {
       this.send()
     }
   }
+
 }
 </script>

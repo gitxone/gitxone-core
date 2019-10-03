@@ -57,8 +57,6 @@ func ParseCommand(s string) []string {
 		prevChar = char
 	}
 
-	if len(token) > 0 {
-		tokens = append(tokens, string(token))
-	}
+	tokens = append(tokens, string(token))
 	return tokens
 }
