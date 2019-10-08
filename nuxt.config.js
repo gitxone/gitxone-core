@@ -5,6 +5,9 @@ export default {
   generate: {
     dir: 'nuxt-dist',
   },
+  env: {
+    serverPort: process.env.NODE_ENV === 'dev' ? '10098' : null
+  },
   head: {
     title: process.env.npm_package_name || '',
     meta: [

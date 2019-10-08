@@ -19,6 +19,8 @@ import (
 	_ "github.com/gitxone/gitxone-core/statik"
 )
 
+var gitCommand = "git"
+
 const defaultHost = ""
 const defaultPort = 10098
 const bufferSize = 1024 * 8
@@ -75,7 +77,7 @@ func gitSocketHandlerFactory(path string) func(ws *websocket.Conn) {
 			case "exec":
 				realTokens := append([]string{"-C", path}, tokens...)
 
-				cmd := exec.Command("git", realTokens...)
+				cmd := exec.Command(gitCommand, realTokens...)
 				cmd.Env = []string{
 					"PAGER=cat",
 				}
@@ -111,9 +113,11 @@ func main() {
 		w.Write(data)
 	})
 
-	host := flag.String("host", defaultHost, "host address")
-	port := flag.Int("port", defaultPort, "port number")
-	err := http.ListenAndServe(fmt.Sprintf("%s:%d", *host, *port), nil)
+	host := *flag.String("host", defaultHost, "host address")
+	port := *flag.Int("port", defaultPort, "port number")
+	gitCommand = *flag.String("git", gitCommand, "Git path")
+
+	err := http.ListenAndServe(fmt.Sprintf("%s:%d", host, port), nil)
 	if err != nil {
 		panic("ListenAndServe: " + err.Error())
 	}

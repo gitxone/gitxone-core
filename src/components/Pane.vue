@@ -135,13 +135,14 @@ function handleExecMessage (data: any) {
 }
 
 function handleCompleteMessage (data: any) {
-  this.candidates = data.content
+  this.candidates = data.content.filter((x, i, that) => that.indexOf(x) === i)
 }
 
 
 
 function makeSocket(this: any) {
-  const socket = new WebSocket(`ws://${location.hostname}:10098/git?path=${this.path}`)
+  const port = process.env.serverPort || location.port
+  const socket = new WebSocket(`ws://${location.hostname}:${port}/git?path=${this.path}`)
 
   socket.addEventListener('open', (event: Event) => {
     if (!this.post) {
@@ -196,7 +197,14 @@ export default class VueComponent extends Vue {
     this.complete()
   }
   handleComplement (this: any, event: Event) {
-    const common = this.getCommonString(this.candidates)
+    if (this.command === '') {
+      this.complete()
+      event.preventDefault()
+      return
+    }
+    const lastToken = this.command.split(' ').pop()
+    const cands = this.candidates.filter((c: string) => c.indexOf(lastToken) === 0)
+    const common = this.getCommonString(cands)
     this.command = this.getCompletion(common)
     event.preventDefault()
   }
