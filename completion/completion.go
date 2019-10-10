@@ -45,8 +45,8 @@ func Complete(path string, tokens []string) []string {
 		if suggestion == "" {
 			continue
 		}
-		v, existing := ValueTypes[suggestion]
-		if !existing {
+		v, marked := ValueTypes[suggestion]
+		if !marked {
 			result = append(result, suggestion)
 			continue
 		}
@@ -79,25 +79,29 @@ func suggest(options []Option, tokens []string) []string {
 
 	// marking loop
 	for serial, option := range options { //options
-		//value := ""
 		multiple := false
 		for _, token := range tokens {
 			if token == "" {
 				continue
 			}
-			status, checked := done[serial]
-			if checked && status.state == DONE {
+			status, marked := done[serial]
+			if marked && status.state == DONE {
 				break
 			}
-			if checked && status.state == OPTIONAL {
+			if marked && status.state == REMOVED {
+				break
+			}
+			if marked && status.state == OPTIONAL {
 				if token[0] != '-' {
 					status.state = DONE
+					done[serial] = status
 					break
 				}
 			}
-			if checked && status.state == SHORT {
+			if marked && status.state == SHORT {
 				if token[0] == '-' {
 					status.state = INVALID
+					done[serial] = status
 					break
 				}
 				if multiple {
@@ -105,10 +109,14 @@ func suggest(options []Option, tokens []string) []string {
 				} else {
 					status.state = DONE
 				}
+				done[serial] = status
 			}
 
 			value, multiple, found := option.getValue(token)
 			if found {
+				for _, s := range option.InvalidSerials {
+					done[s] = Status{REMOVED, "", false}
+				}
 				if value == "" {
 					if multiple {
 						done[serial] = Status{WAITING, "", false}
@@ -127,10 +135,28 @@ func suggest(options []Option, tokens []string) []string {
 	result := make([]string, 0)
 	// extracting short loop
 	for serial := range options {
-		status, existing := done[serial]
-		if existing && status.state == SHORT {
-			result = append(result, fmt.Sprintf("<%s>", status.value))
+		status, marked := done[serial]
+		if marked && status.state == SHORT {
+			result = append(result, formatStringAsValue(status.value))
 			return result
+		}
+	}
+	// removing loop
+	group := 0
+	trailing := false
+	for serial, option := range options {
+		if group != option.Group {
+			group = option.Group
+			trailing = false
+		}
+		status, marked := done[serial]
+		if !trailing && !marked && !option.Optional {
+			trailing = true
+			continue
+		}
+		if trailing {
+			status.state = REMOVED
+			done[serial] = status
 		}
 	}
 
@@ -156,10 +182,24 @@ func suggest(options []Option, tokens []string) []string {
 			if v[len(v)-1] == '?' {
 				v = v[:len(v)-1]
 			}
-			result = append(result, fmt.Sprintf("<%s>", v))
+			result = append(result, formatStringAsValue(v))
 		}
 	}
 	return result
+}
+
+func formatStringAsValue(value string) string {
+	if value == "" {
+		return ""
+	}
+	if value[0] == '-' || value[0] == '=' {
+		return value[1:]
+	}
+	values := make([]string, 0)
+	for _, s := range strings.Split(value, " ") {
+		values = append(values, fmt.Sprintf("<%s>", s))
+	}
+	return strings.Join(values, " ")
 }
 
 func getFiles(path string, lastToken string) []string {
