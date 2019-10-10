@@ -151,7 +151,7 @@ function makeSocket(this: any) {
   })
 
   socket.addEventListener('close', (event: Event) => {
-    makeSocket.call(this)
+    setTimeout(() => makeSocket.call(this), 500)
   })
 
   socket.addEventListener('message', (event: {data: any}) => {
