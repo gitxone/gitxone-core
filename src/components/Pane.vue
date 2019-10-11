@@ -3,6 +3,8 @@
   :x="x" :y="y" :z="z"
   :w="width" :h="height"
   :parent="true"
+  :draggable="draggable"
+  :resizable="resizable"
   dragHandle=".git"
   @dragging="handleDrag" 
   @resizing="handleResize"
@@ -37,7 +39,12 @@
       &amp;&amp; {{ post }}
     </div>
   </div>
-  <pre :class="`pane-body`" :title="error">{{ result }}</pre>
+  <pre
+    :class="`pane-body`"
+    :title="error"
+    @dblclick="$emit('modalOpen', result)"
+    title="Double click to display the text on a modal."
+  >{{ result }}</pre>
 </div>
 </vue-draggable-resizable>
 </template>
@@ -91,13 +98,15 @@
         font-family "Courier New", Consolas, monospace
     .post-process
       padding 5px
-  .pane-body
-    padding 5px
-    line-height 20px
-    border-top solid 1px #444444
-    font-family "Courier New", Consolas, monospace
-    overflow auto
-    flex 1
+
+.pane-body
+  padding 5px
+  line-height 20px
+  border-top solid 1px #444444
+  font-family "Courier New", Consolas, monospace
+  overflow auto
+  flex 1
+  cursor pointer
 
 </style>
 
@@ -194,6 +203,10 @@ export default class VueComponent extends Vue {
   id?: string;
   @Prop()
   path?: string;
+  @Prop()
+  draggable: bool;
+  @Prop()
+  resizable: bool;
 
   connected = false;
   candidates = [];

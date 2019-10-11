@@ -17,8 +17,14 @@
     :initialCommand="pane.command"
     :post="pane.post"
     :path="path"
+    :draggable="true"
+    :resizable="true"
+    @modalOpen="handleModalOpen"
   ></Pane>
 </div>
+<Modal @close="handleModalClose" v-if="modalContent">
+<pre class="modal-result">{{ modalContent }}</pre>
+</Modal>
 </div>
 </template>
 
@@ -42,6 +48,7 @@ import { RepoType, PanesType } from '@/store/types'
 import defaultState from '@/defaultState.json'
 
 import Pane from '@/components/Pane.vue'
+import Modal from '@/components/Modal.vue'
 
 interface MenuType {
   header?: boolean,
@@ -62,6 +69,7 @@ interface MenuType {
     'vue-draggable-resizable': VueDraggableResizable,
     'sidebar-menu': SidebarMenu,
     Pane,
+    Modal,
   }
 })
 export default class VueComponent extends Vue {
@@ -104,6 +112,7 @@ export default class VueComponent extends Vue {
       icon: 'fab fa-github',
     },
   ];
+  modalContent = null;
 
   get path (this: any): string {
     return this.$route.params.pathMatch
@@ -126,7 +135,12 @@ export default class VueComponent extends Vue {
     this.$store.commit(SET_REPO, {... this.repo, path: this.path, lastAccess: moment().format('YYYY-MM-DD HH:mm')})
     this.$store.commit(SAVE_REPOS)
   }
-
+  handleModalOpen (this: any, content: string) {
+    this.modalContent = content
+  }
+  handleModalClose (this: any) {
+    this.modalContent = null
+  }
   handleMenuClick (this: any, event: Event, item: MenuType) {
     switch(item.operation) {
       case 'command':
@@ -146,4 +160,15 @@ export default class VueComponent extends Vue {
   position relative
   margin-left 50px
   min-height 100vh
+  z-index 0
+
+.modal-result
+  color #ffffff
+  padding 5px
+  line-height 20px
+  font-family "Courier New", Consolas, monospace
+  height 100vh
+  overflow auto
+
 </style>
+
