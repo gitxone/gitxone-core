@@ -8,7 +8,7 @@
   @resizing="handleResize"
 >
 <div 
-  :class="`pane ${post && 'pane-' + post} ${error && 'pane-error'} ${processing ? 'processing' : ''}`" 
+  :class="`pane ${post && 'pane-' + post} ${error && 'pane-error'} ${processing ? 'processing' : ''} ${connected ? '' : 'not-connected'}`" 
   @click="handleClick">
   <div class="pane-head">
     <div class="git">
@@ -16,13 +16,14 @@
     </div>
     <div class="command">
       <input 
-        placeholder="command or 'exit' to close" 
         v-model="command"
         @keyup="handleComplete"
         @keyup.enter="handleEnter"
         @keydown.tab="handleComplement"
         autocomplete="on"
+        :placeholder="connected ? 'Command or \'exit\' to close' : 'Wait a moment...'" 
         :list="`comp-list-${id}`"
+        :disabled="!connected"
       />
       <datalist :id="`comp-list-${id}`">
         <option 
@@ -54,6 +55,9 @@
   flex-direction column
   width 100%
   height 100%
+
+  &.not-connected
+    background-color #333333
 
   &.processing
     background-color #000044
@@ -120,13 +124,17 @@ function handleExecMessage (data: any) {
   this.error =  data.error || ''
   switch (this.post) {
     case 'exit':
-      this.$store.commit(DEL_PANE, {path: this.path, id: this.id})
+      if (!this.error) {
+        this.$store.commit(DEL_PANE, {path: this.path, id: this.id})
+      }
       this.sync()
       break
     case 'clear':
-      this.command = ''
-      this.$store.commit(SET_PANE, {path: this.path, id: this.id, command: ''})
-      this.$store.commit(SAVE_REPOS)
+      if (!this.error) {
+        this.command = ''
+        this.$store.commit(SET_PANE, {path: this.path, id: this.id, command: ''})
+        this.$store.commit(SAVE_REPOS)
+      }
       this.sync()
       break
   }
@@ -145,12 +153,14 @@ function makeSocket(this: any) {
   const socket = new WebSocket(`ws://${location.hostname}:${port}/git?path=${this.path}`)
 
   socket.addEventListener('open', (event: Event) => {
+    this.connected = true
     if (!this.post) {
       this.send()
     }
   })
 
   socket.addEventListener('close', (event: Event) => {
+    this.connected = false
     setTimeout(() => makeSocket.call(this), 500)
   })
 
@@ -185,6 +195,7 @@ export default class VueComponent extends Vue {
   @Prop()
   path?: string;
 
+  connected = false;
   candidates = [];
   result = '';
   error = '';

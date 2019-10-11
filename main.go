@@ -20,9 +20,9 @@ import (
 )
 
 var gitCommand = "git"
+var host = ""
+var port = 10098
 
-const defaultHost = ""
-const defaultPort = 10098
 const bufferSize = 1024 * 8
 
 type Request struct {
@@ -113,8 +113,8 @@ func main() {
 		w.Write(data)
 	})
 
-	host := *flag.String("host", defaultHost, "host address")
-	port := *flag.Int("port", defaultPort, "port number")
+	host := *flag.String("host", host, "host address")
+	port := *flag.Int("port", port, "port number")
 	gitCommand = *flag.String("git", gitCommand, "Git path")
 
 	err := http.ListenAndServe(fmt.Sprintf("%s:%d", host, port), nil)

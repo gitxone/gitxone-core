@@ -78,32 +78,16 @@ export default class VueComponent extends Vue {
       icon: 'fa fa-terminal',
       child: [
         {
-          title: '&& clear',
-          icon: 'far fa-window-restore',
+          title: 'and clear',
+          //icon: 'far fa-window-restore',
           operation: 'command',
           post: 'clear',
-          child: [
-            {
-              title: 'git commit -m ',
-              operation: 'command',
-              command: 'commit -m ',
-              post: 'clear',
-            },
-          ],
         },
         {
-          title: '&& exit (close)',
-          icon: 'fas fa-times',
+          title: 'and exit',
+          //icon: 'fas fa-times',
           operation: 'command',
           post: 'exit',
-          child: [
-            {
-              title: 'git add *',
-              operation: 'command',
-              command: 'add *',
-              post: 'exit',
-            },
-          ],
         },
 
       ]

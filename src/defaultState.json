@@ -1,81 +1,91 @@
 {
-  "topZ": 0,
+  "topZ": 100,
   "panes": {
+    "id0": {
+      "width": 388,
+      "height": 64,
+      "x": 0,
+      "y": 0,
+      "z": 1,
+      "command": "version",
+      "post": ""
+    },
     "id1": {
       "command": "log -1000 --graph --pretty=format:'%h %ad %s %d' --all --date=format:'%y%m%d %H:%M'",
       "width": 675,
-      "height": 548,
+      "height": 549,
       "x": 387,
       "y": 174,
-      "z": 0
+      "z": 2
     },
     "id2": {
       "command": "status --short",
       "width": 388,
-      "height": 423,
+      "height": 320,
       "x": 0,
-      "y": 0,
-      "z": 0
+      "y": 63,
+      "z": 3
     },
     "id3": {
       "command": "branch -a",
       "width": 388,
-      "height": 329,
+      "height": 279,
       "x": 0,
-      "y": 303,
-      "z": 0
+      "y": 353,
+      "z": 4
     },
     "id4": {
-      "command": "diff",
-      "width": 602,
-      "height": 212,
-      "x": 730,
-      "y": 174,
-      "z": 0
-    },
-    "id5": {
-      "command": "remote -v",
-      "width": 602,
-      "height": 114,
-      "x": 730,
-      "y": 609,
-      "z": 0
-    },
-    "id6": {
-      "command": "",
-      "post": "clear",
-      "width": 777,
-      "height": 177,
-      "x": 285,
-      "y": 0,
-      "z": 0
-    },
-    "id7": {
-      "command": "diff --cached",
-      "post": "",
-      "width": 602,
-      "height": 224,
-      "x": 730,
-      "y": 386,
-      "z": 0
-    },
-    "id8": {
-      "command": "stash list",
-      "post": "",
-      "width": 273,
-      "height": 177,
-      "x": 1059,
-      "y": 0,
-      "z": 0
-    },
-    "id9": {
       "command": "tag",
       "post": "",
       "width": 388,
       "height": 123,
       "x": 0,
       "y": 600,
-      "z": 0
+      "z": 5
+    },
+    "id5": {
+      "command": "diff",
+      "width": 602,
+      "height": 212,
+      "x": 730,
+      "y": 174,
+      "z": 6
+    },
+    "id6": {
+      "command": "remote -v",
+      "width": 602,
+      "height": 114,
+      "x": 730,
+      "y": 609,
+      "z": 7
+    },
+    "id7": {
+      "command": "",
+      "post": "clear",
+      "width": 675,
+      "height": 175,
+      "x": 387,
+      "y": 0,
+      "z": 8
+    },
+    "id8": {
+      "command": "diff --cached",
+      "post": "",
+      "width": 602,
+      "height": 225,
+      "x": 730,
+      "y": 385,
+      "z": 9
+    },
+    "id9": {
+      "command": "stash list",
+      "post": "",
+      "width": 271,
+      "height": 175,
+      "x": 1061,
+      "y": 0,
+      "z": 10
     }
   }
 }
+
