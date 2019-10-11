@@ -113,8 +113,8 @@ func main() {
 		w.Write(data)
 	})
 
-	host := *flag.String("host", host, "host address")
-	port := *flag.Int("port", port, "port number")
+	host = *flag.String("host", host, "host address")
+	port = *flag.Int("port", port, "port number")
 	gitCommand = *flag.String("git", gitCommand, "Git path")
 
 	err := http.ListenAndServe(fmt.Sprintf("%s:%d", host, port), nil)
