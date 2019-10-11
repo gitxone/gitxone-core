@@ -12,7 +12,7 @@ schema:
     extensions:
     - go
     paths:
-    - / 
+    - /go/src/
     ignored_paths:
     - .git
     - .config

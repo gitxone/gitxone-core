@@ -204,9 +204,9 @@ export default class VueComponent extends Vue {
   @Prop()
   path?: string;
   @Prop()
-  draggable: bool;
+  draggable?: bool;
   @Prop()
-  resizable: bool;
+  resizable?: bool;
 
   connected = false;
   candidates = [];
