@@ -22,10 +22,19 @@ TODO: write
 
 # Development
 
-- Start up next server.
-  ```bash
-  $ docker-compose up
-  ```
+```bash
+# Clone the repositories.
+$ git clone git@github.com:gitxone/gitxone-core.git --recursive
 
-- Go to http://localhost:3000/
+# Update submodules.
+$ git submodule update --recursive
+
+# Start Nuxt server. and go to http://localhost:3000/
+$ docker-compose up
+
+# Release.
+$ git tag vX.Y.Z
+$ git push origin vX.Y.Z
+```
+
 
