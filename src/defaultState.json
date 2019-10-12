@@ -68,7 +68,7 @@
       "id": "id6"
     },
     "id7": {
-      "command": "pull",
+      "command": "",
       "post": "clear",
       "width": 675,
       "height": 175,
