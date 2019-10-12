@@ -1,14 +1,15 @@
 {
-  "topZ": 100,
+  "topZ": 596,
   "panes": {
     "id0": {
       "width": 388,
       "height": 64,
       "x": 0,
       "y": 0,
-      "z": 1,
+      "z": 464,
       "command": "version",
-      "post": ""
+      "post": "",
+      "id": "id0"
     },
     "id1": {
       "command": "log -1000 --graph --pretty=format:'%h %ad %s %d' --all --date=format:'%y%m%d %H:%M'",
@@ -16,7 +17,8 @@
       "height": 549,
       "x": 387,
       "y": 174,
-      "z": 2
+      "z": 593,
+      "id": "id1"
     },
     "id2": {
       "command": "status --short",
@@ -24,7 +26,8 @@
       "height": 320,
       "x": 0,
       "y": 63,
-      "z": 3
+      "z": 591,
+      "id": "id2"
     },
     "id3": {
       "command": "branch -a",
@@ -32,7 +35,8 @@
       "height": 279,
       "x": 0,
       "y": 353,
-      "z": 4
+      "z": 576,
+      "id": "id3"
     },
     "id4": {
       "command": "tag",
@@ -41,7 +45,8 @@
       "height": 123,
       "x": 0,
       "y": 600,
-      "z": 5
+      "z": 492,
+      "id": "id4"
     },
     "id5": {
       "command": "diff",
@@ -49,7 +54,8 @@
       "height": 212,
       "x": 730,
       "y": 174,
-      "z": 6
+      "z": 594,
+      "id": "id5"
     },
     "id6": {
       "command": "remote -v",
@@ -57,16 +63,19 @@
       "height": 114,
       "x": 730,
       "y": 609,
-      "z": 7
+      "z": 596,
+      
+      "id": "id6"
     },
     "id7": {
-      "command": "",
+      "command": "pull",
       "post": "clear",
       "width": 675,
       "height": 175,
       "x": 387,
       "y": 0,
-      "z": 8
+      "z": 587,
+      "id": "id7"
     },
     "id8": {
       "command": "diff --cached",
@@ -75,7 +84,8 @@
       "height": 225,
       "x": 730,
       "y": 385,
-      "z": 9
+      "z": 595,
+      "id": "id8"
     },
     "id9": {
       "command": "stash list",
@@ -84,7 +94,8 @@
       "height": 175,
       "x": 1061,
       "y": 0,
-      "z": 10
+      "z": 573,
+      "id": "id9"
     }
   }
 }

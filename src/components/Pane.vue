@@ -41,7 +41,8 @@
   </div>
   <pre
     :class="`pane-body`"
-    :title="error"
+    :title="error ? error : 'Double click to display the text on a modal.'"
+    :style="result && !error ? {cursor: 'pointer'} : {}"
     @dblclick="$emit('modalOpen', result)"
     title="Double click to display the text on a modal."
   >{{ result }}</pre>
@@ -106,7 +107,6 @@
   font-family "Courier New", Consolas, monospace
   overflow auto
   flex 1
-  cursor pointer
 
 </style>
 
