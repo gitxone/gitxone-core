@@ -6,8 +6,12 @@ schema:
 - name: realize
   path: .
   commands: 
+    install:
+      status: true
+      method: go build -o /go/bin/gitxone
     run:
       status: true
+      method: /go/bin/gitxone
   watcher:
     extensions:
     - go
