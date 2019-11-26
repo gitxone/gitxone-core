@@ -7,7 +7,6 @@ services:
     working_dir: /go/src/github.com/gitxone/gitxone-core/
     command: >
       bash -c "set -x &&
-      dep ensure -v &&
       realize start --run"
     ports:
       - "10098:10098"
