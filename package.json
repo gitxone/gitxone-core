@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@types/uuid": "^3.4.5",
-    "moment": "^2.24.0",
+    "moment": "^2.29.4",
     "nuxt": "^2.9.2",
     "@nuxt/typescript-runtime": "^0.1.7",
     "uuid": "^3.3.3",
